@@ -144,7 +144,6 @@ You will be assessed based on the sections you complete, with the difficulty lev
    - Choose from the following Calendar Booking links based on your role:
      - **Alex Quinit** (Senior & Backend Roles): [Book here](https://calendly.com/apquinit)
      - **N Petterson** (Engineering Roles): [Book here](https://ro.am/beforeoafterm.w3.io/tech-assessment)
-     - **Aljun** (Project Manager & QA Roles): [Book here](https://calendly.com/aljun-corporate/15-catch-up-call)
 
 ---
 
