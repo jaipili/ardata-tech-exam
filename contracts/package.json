@@ -1,0 +1,24 @@
+{
+  "name": "blockchain-app-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for blockchain sample application",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy-testnet.js --network sepolia",
+    "verify": "hardhat run scripts/verify-contract.js --network sepolia",
+    "test-contract": "hardhat run scripts/test-contract.js --network sepolia",
+    "mint": "hardhat run scripts/mint-nft.js --network sepolia"
+  },
+  "keywords": ["blockchain", "smart-contracts", "ethereum", "nft"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.19.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0",
+    "dotenv": "^16.3.1"
+  }
+}

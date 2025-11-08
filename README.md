@@ -1,145 +1,195 @@
-# Full Stack Developer Tech Exam
+# Blockchain Application
 
-## Overview:
-This tech exam is designed to assess your skills across various domains of full stack development, including frontend, backend, smart contract development, and integration. It is divided into sections, with each section representing a progressively more challenging tier. You are not required to complete all sections to pass, as the assessment is designed to evaluate your current skill level.
+A full-stack NFT minting application built with React, Node.js, and Solidity smart contracts. This application allows users to mint, transfer, and track ERC-721 NFTs on the Sepolia testnet.
 
-Complete as much as you can, and we will assess your capabilities accordingly.
+## Overview
 
----
+**Key Features:**
 
-## **Tier 1: Frontend Development**
+- **SampleNFT Smart Contract** - ERC-721 NFT contract with minting, batch minting, and transfer capabilities
+- **Web Interface** - React-based frontend for wallet connection and NFT interactions
+- **Backend API** - Node.js service for blockchain data indexing using Etherscan API
+- **Transaction History** - Real-time tracking of wallet transactions and NFT ownership
 
-### Task:
-Create a basic web interface that allows users to connect their Ethereum wallet (using MetaMask or WalletConnect) and view their balance and transaction history.
+**Automated Workflows:**
 
-### Requirements:
-1. Build a UI that allows users to connect their Ethereum wallet.
-2. Fetch and display the user's Ethereum balance (in ETH).
-3. Fetch and display the user's last 10 transactions.
-4. Include basic error handling for failed connections or API calls.
-5. Use web3.js or ethers.js for blockchain interactions.
-
-### Bonus:
-- Use TypeScript for the frontend code.
-
-### Difficulty Level: Easy
-This tier is designed to assess your ability to build simple UI interactions with blockchain data.
+- **One-Command Initialization** - Interactive script to set up all environment configurations
+- **Automated Deployment** - Deploy smart contracts and update environment variables automatically
+- **Contract Verification** - Automatic verification on Etherscan after deployment
+- **Centralized Configuration** - Single `.env` file managed by Docker Compose for all services
 
 ---
 
-## **Tier 2: Backend Development**
+## Getting Started
 
-### Task:
-Create an API endpoint that returns the gas price, current Ethereum block number, and basic account details for a given Ethereum address.
+This guide will help you set up and deploy the blockchain application from scratch.
 
-### Requirements:
-1. Create a REST API with an endpoint to accept an Ethereum address as input.
-2. Call the Ethereum network to get:
-   - Current gas price.
-   - Current block number.
-   - The balance of the given address.
-3. Return the above data in a JSON format.
-4. Properly structure the code to allow future extensibility.
+## Prerequisites
 
-### Resources:
-- Etherscan - https://docs.etherscan.io/
-- Alchemy - https://docs.alchemy.com/reference/api-overview
-- Covalent - https://www.covalenthq.com/docs/api/#/0/0/USD/1
+Before you begin, make sure you have the following:
 
-### Bonus:
-- Implement simple caching (e.g., using Redis) for the gas price and block number to reduce API calls.
-- Set up a PostgreSQL or MongoDB database to store account balances.
+1. **Docker** and Docker Compose installed
+2. **Sepolia Testnet Wallet** with some test ETH
+   - Get testnet ETH from [Sepolia Faucet](https://sepoliafaucet.com/)
+3. **Sepolia RPC URL**
+4. **Etherscan API Key**
+   - Create one at [Etherscan](https://etherscan.io/myapikey)
 
-### Difficulty Level: Intermediate
-This tier introduces backend development and API integration with external services.
+### Step 1: Initialize the Project
 
----
+Run the initialization script to set up your environment files:
 
-## **Tier 3: Smart Contract Development**
+```bash
+./scripts/initialize.sh
+```
 
-### Task:
-Write a simple Ethereum smart contract (ERC-721 or ERC-20) that allows minting tokens and transferring them between users.
+This interactive script will prompt you for:
 
-### Requirements:
-1. Write a smart contract in Solidity that:
-   - Allows a user to mint a token (ERC-721 or ERC-20).
-   - Allows users to transfer tokens to another address.
-2. Use OpenZeppelin libraries for base contracts.
+- **RPC URL** - Your Sepolia testnet RPC endpoint
+- **Wallet Private Key** - Your testnet wallet private key (without 0x prefix)
+- **Etherscan API Key** - For contract verification on Etherscan
+- **Database Configuration** (Optional) - Press Enter to use defaults
 
-### Bonus:
-- Deploy the contract to a testnet (e.g., Rinkeby or Goerli).
+The script will create `.env` files in both the root and contracts directories with your configuration.
 
-### Difficulty Level: Intermediate to Advanced
-This tier assesses your understanding of blockchain development through smart contract creation.
+### Step 2: Deploy Smart Contract
 
----
+Deploy the SampleNFT smart contract to Sepolia testnet:
 
-## **Tier 4: Integration**
+```bash
+./scripts/deploy-contract.sh
+```
 
-### Task:
-Integrate the frontend with the backend and smart contract to enable users to mint a token from the frontend and view their minted tokens.
+This script will:
 
-### Requirements:
-1. From the frontend, allow users to mint tokens by interacting with the smart contract.
-2. Once a token is minted, show the token details (e.g., token ID, owner) on the frontend.
-3. Fetch token data using the backend API for the given address.
-4. Handle errors (e.g., insufficient funds for gas fees, contract deployment issues).
+- Deploy the smart contract to Sepolia testnet
+- Verify the contract on Etherscan
+- Automatically update the `CONTRACT_ADDRESS` in the `<CLONE_DIR>/.env` file
+- Display deployment details and the Etherscan URL
 
-### Bonus:
-- **Docker**: Create a Dockerfile to containerize the frontend and backend services, and use Docker Compose to orchestrate the services.
+**Alternative:** You can also deploy manually from the contracts directory. For detailed instructions, see [contracts/README.md](contracts/README.md)
 
-### Difficulty Level: Advanced
-This tier challenges you to integrate all components into a full-stack application, demonstrating both frontend and backend skills, as well as blockchain knowledge.
+### Step 3: Build and Deploy Services
 
----
+#### Deploy All Services
 
-## **Scoring Criteria**:
-You will be assessed based on the sections you complete, with the difficulty level factored into your final evaluation. You can earn bonus points in each section by completing the optional tasks.
+Start all services (Frontend, Backend, Database, Redis) using Docker Compose:
 
-### **Frontend (20 points)**:
-- Functionality and usability (10 points)
-- Code quality and structure (10 points)
-- Bonus: TypeScript usage (5 points)
+```bash
+docker-compose up --build
+```
 
-### **Backend (20 points)**:
-- API functionality (10 points)
-- Code structure and error handling (10 points)
-- Bonus: Caching and database (5 points)
+Or run in detached mode:
 
-### **Smart Contract (20 points)**:
-- Contract functionality (15 points)
-- Code organization and readability (5 points)
-- Bonus: Testnet deployment (5 points)
+```bash
+docker-compose up -d --build
+```
 
-### **Integration (20 points)**:
-- Seamless integration of frontend, backend, and smart contract (15 points)
-- Error handling (5 points)
-- Bonus: Docker (5 points)
+#### Deploy a Specific Service
 
----
+If you need to rebuild and redeploy only one service:
 
-## **📤 Submission Guidelines**:
-1. **🔗 GitHub Repository**:
-   - Push all your code (frontend, backend, smart contracts, Docker files, etc.) to **a new GitHub repository**.
-   - Organize the repository with clear directories, such as:
-       ```bash
-       (e.g., /frontend, /backend, /contracts, /docker).
-       ```
-   - Ensure all **sensitive information** (e.g., API keys, private keys, or secrets) is excluded from the repository.
-   - Set your repository to **Public** so it is accessible for review.
+```bash
+# Frontend only
+docker-compose up frontend --build --force-recreate
 
-2. **📝 README**:
-   - Include a `README.md` at the root of your repository containing the following:
-     - A brief overview of the project
-     - Instructions to set up and run the application locally
-     - List of prerequisites or dependencies
-     - Docker Compose usage instructions (if applicable)
-     - Key assumptions or architectural decisions you made
-     - Known issues or limitations (if any)
+# Backend only
+docker-compose up backend --build --force-recreate
+```
 
-3. **📅 Schedule a Review**:
-   - Once your repository is ready and public, kindly wait for the interview schedule instructions via e-mail. 
+### Step 4: Access the Application
 
----
+Once all services are running:
 
-Thank you for participating! We look forward to seeing your skills in action!
+- **Frontend:** <http://localhost:3000>
+- **Backend API:** <http://localhost:3001>
+- **PostgreSQL:** localhost:5432
+- **Redis:** localhost:6379
+
+### Step 5: Mint NFTs
+
+After deploying your smart contract and starting the services, you can mint NFTs using one of the following methods:
+
+#### Mint via Web Interface
+
+1. Open the frontend at <http://localhost:3000>
+2. Connect your MetaMask wallet
+3. Make sure you're connected to Sepolia testnet
+4. Use the minting interface to mint your NFT
+5. Confirm the transaction in MetaMask
+
+**Alternative:** You can also mint manually from the contracts directory. For detailed instructions, see [contracts/README.md](contracts/README.md)
+
+## Common Commands
+
+### View Logs
+
+```bash
+# All services
+docker-compose logs -f
+
+# Specific service
+docker-compose logs -f backend
+docker-compose logs -f frontend
+```
+
+### Restart Services
+
+```bash
+# Restart all
+docker-compose restart
+
+# Restart specific service
+docker-compose restart backend
+```
+
+### Stop Services
+
+```bash
+docker-compose down
+```
+
+### Stop and Remove Volumes
+
+```bash
+docker-compose down -v
+```
+
+## Next Steps
+
+After deployment:
+
+1. View your deployed contract on [Sepolia Etherscan](https://sepolia.etherscan.io/)
+2. Mint your first NFT (see Step 5 above)
+3. Explore transaction history and blockchain data in the frontend
+
+## Troubleshooting
+
+### "Insufficient funds" Error
+
+- Ensure your wallet has enough Sepolia testnet ETH for gas fees
+- Get testnet ETH from [Sepolia Faucet](https://sepoliafaucet.com/)
+  - **Note:** The faucet requires a minimum of 0.01 ETH in your wallet on Ethereum mainnet to verify you're not a bot
+
+### Contract Verification Fails
+
+- Check your Etherscan API key is valid
+- The contract will still be deployed and functional
+
+### Services Not Starting
+
+- Check if ports 3000, 3001, 5432, or 6379 are already in use
+- Run `docker-compose down` and try again
+
+### Environment Variables Not Loading
+
+- Make sure you ran `./scripts/initialize.sh` first
+- Check that `.env` files exist in root and contracts directories
+- Restart Docker services after updating environment variables
+
+## Security Reminders
+
+- **Never commit** `.env` files to version control
+- **Never use** mainnet wallets or private keys for development
+- **Keep your** private keys and API keys secure
+- **Use testnet only** for development and testing

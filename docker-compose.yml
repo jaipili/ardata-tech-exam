@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: blockchain-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-blockchain_app}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - blockchain-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: blockchain-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - blockchain-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: redis-server --appendonly yes
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: blockchain-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3001
+      ETHEREUM_RPC_URL: ${SEPOLIA_RPC_URL}
+      ETHERSCAN_API_KEY: ${ETHERSCAN_API_KEY}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-blockchain_app}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres_password}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CACHE_TTL_GAS_PRICE: 60
+      CACHE_TTL_BLOCK_NUMBER: 10
+      CACHE_TTL_BALANCE: 30
+      CONTRACT_ADDRESS: ${CONTRACT_ADDRESS:-}
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - blockchain-network
+    volumes:
+      - ./backend/src:/app/src
+      - ./contracts/deployments:/app/deployments
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:3001
+        VITE_BLOCKCHAIN_RPC_URL: ${SEPOLIA_RPC_URL}
+        VITE_CONTRACT_ADDRESS: ${CONTRACT_ADDRESS:-}
+    container_name: blockchain-frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:3001
+      VITE_BLOCKCHAIN_RPC_URL: ${SEPOLIA_RPC_URL}
+      VITE_CONTRACT_ADDRESS: ${CONTRACT_ADDRESS:-}
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - blockchain-network
+
+networks:
+  blockchain-network:
+    driver: bridge
+    name: blockchain-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
